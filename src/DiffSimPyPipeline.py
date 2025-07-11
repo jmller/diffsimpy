@@ -29,13 +29,15 @@ class CalculationPipeline(DiffCoSimulator):
         the electromagnetic fields using the simulation parameters.
     """
     
-    def __init__(self, S_0, S_C_const, b_field=None, e_field=None, **kwarg): #TODO: initializes z0=50;allow for other values
+    def __init__(self, S_0, S_C_const, b_field=None, e_field=None, device='cpu', **kwarg): #TODO: initializes z0=50;allow for other values
         """ Initialize the CalculationPipeline instance.
         """
         super(CalculationPipeline, self).__init__(S_0=S_0, 
                                                    S_C_const=S_C_const,
                                                    b_field=b_field, 
-                                                   e_field=e_field, **kwarg)
+                                                   e_field=e_field, 
+                                                   device=device,
+                                                   **kwarg)
 
     def forward(self, s_params, indices: tuple = None):
         """ Perform a forward calculation to calculate the electromagnetic fields.

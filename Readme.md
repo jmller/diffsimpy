@@ -20,7 +20,7 @@ An open source Differentiable Co-Simulation Python Framework for the Efficient M
 
 ## Main Features
 The framework, built on PyTorch as the underlying matrix manipulation framework, offers the following features:
-- **Parallel processing** of resulting electromagnetic fields from any given scattering parameters (S_C) and earlier preprocessing steps.
+- **Vectorized processing** of resulting electromagnetic fields from any given scattering parameters (S_C) and earlier preprocessing steps.
 - Support for **gradient-based optimization** algorithms.
 - GPU-accelerated computations.
 - **Easy integration** into existing optimization pipelines.
@@ -31,7 +31,7 @@ The framework, built on PyTorch as the underlying matrix manipulation framework,
 ## Getting Started
 The library was developed and tested with Python 3.10.14 in a Ubuntu Docker machine. If you choose to build your own environment you will need the following packages installed:
 
-- cosimpy==1.4.0
+- cosimpy==1.4.1
 - matplotlib==3.9.2
 - numpy==2.1.1
 - pytest==8.2.2

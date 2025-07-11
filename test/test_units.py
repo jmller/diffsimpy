@@ -29,21 +29,21 @@ def test_calc_voltage_wave():
     assert V_O_p.shape == (batch_size, nf, n0, n1)
     
 def test_calc_Pinc():
-    ds = DiffCoSimulator()
+    ds = DiffCoSimulator(S_0 = S_0, S_C_const = S_C)
     V_O_p = torch.rand((batch_size, nf, n0, n1), dtype=torch.cdouble)
     p_incM, phaseM = ds.calc_Pinc(V_O_p)
     assert p_incM.shape == (batch_size, nf, n0, n1)
     assert phaseM.shape == (batch_size, nf, n0, n1)
 
 def test_calc_norm():
-    ds = DiffCoSimulator()
+    ds = DiffCoSimulator(S_0 = S_0, S_C_const = S_C)
     p_incM = torch.rand((batch_size, nf, n0, n1), dtype=torch.cdouble)
     phaseM = torch.rand((batch_size, nf, n0, n1), dtype=torch.cdouble)
     norm = ds.calc_norm(p_incM, phaseM)
     assert norm.shape == (batch_size, nf, n0, n1)
 
 def test_transform_fields_with_norm():
-    ds = DiffCoSimulator()
+    ds = DiffCoSimulator(S_0 = S_0, S_C_const = S_C)
     norm = torch.rand((batch_size, nf, n0, n1), dtype=torch.cdouble)
     field = torch.rand((nf, n0, 3, npoints), dtype=torch.cdouble)
     field_transformed = ds.transform_fields_with_norm(field, norm)

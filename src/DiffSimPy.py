@@ -46,6 +46,7 @@ class DiffCoSimulator(torch.nn.Module):
                  e_field: Union[torch.Tensor, None] = None,
                  z0: Union[torch.Tensor, float] = 50, #Ohm
                  P_inc: Union[torch.Tensor, float]= 1, #W
+                 device: str = 'cpu',
                  **kwarg):
         """Main Class of the Differentiable Co-Simulation Framework. 
         
@@ -104,13 +105,13 @@ class DiffCoSimulator(torch.nn.Module):
         else:
             self.default_complex_dtype = torch.cfloat
 
-        self.S_0 = S_0
-        self.S_C_const = S_C_const
+        self.S_0 = S_0.to(device)
+        self.S_C_const = S_C_const.to(device)
         self.z0 = z0
         self.P_inc = P_inc
 
-        self.b_field = b_field if b_field is not None else None
-        self.e_field = e_field if e_field is not None else None
+        self.b_field = b_field.to(device) if b_field is not None else None
+        self.e_field = e_field.to(device) if e_field is not None else None
 
     def assign_S_C_var(self,
                        s_params: torch.Tensor, #flat tensor of scattering parameters
@@ -139,8 +140,9 @@ class DiffCoSimulator(torch.nn.Module):
 
         S_C = torch.zeros(batch_size, nf, (n0+n1), (n0+n1), dtype=self.default_complex_dtype).to(self.S_0.device)
         s_params = s_params.to(self.S_0.device)
+
+        assert len(sc_idx) == len(sc_idy) == ns, print(len(sc_idx), len(sc_idy), ns)
         
-        assert len(sc_idx) == len(sc_idy) == ns
         id = torch.arange(ns, dtype=torch.int)
         S_C[:, :, sc_idx[id], sc_idy[id]] = s_params[:, :, id]
         return S_C

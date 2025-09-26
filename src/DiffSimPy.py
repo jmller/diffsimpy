@@ -192,7 +192,7 @@ class DiffCoSimulator(torch.nn.Module):
         """
         return self.S_C_const + S_C_var
 
-    def calc_voltage_wave(self, S_C: torch.Tensor) -> torch.Tensor:
+    def calc_voltage_ratio(self, S_C: torch.Tensor) -> torch.Tensor:
         """Calculate the voltage wave for a given scattering matrix.
 
         Parameters
@@ -203,38 +203,33 @@ class DiffCoSimulator(torch.nn.Module):
 
         Returns
         -------
-        V_O_p : torch.Tensor
-            voltage wave
+        voltage_ratio : torch.Tensor
+            voltage_ratio
             4d-tensor of shape [batch_size, nf, n0, n1]
 
         Notes
         -----
         This method calculates the incident complex voltage waves based on the given scattering matrix (in this case: the one of the circuitry).
         It uses z0, S_0, and nf attributes of the object to perform the calculation.
-
-        The incident power is calculated as the absolute value squared of the voltage transfer function
-        between the output port and the incident port. It is normalized by the characteristic impedance z0 and incident power.
         """
 
         S_0 = self.S_0
         n0 = self.S_0.shape[-1]
-        z0 = self.z0
-        P_inc = self.P_inc
         
         S_CL_11 = S_C[:, :, :n0, :n0]
         S_CL_12 = S_C[:, :, :n0, n0:]
 
         identity_matrix = torch.eye(n0).to(S_C.device)
         inverse_term = torch.inverse(identity_matrix - torch.matmul(S_CL_11, S_0))
-        V_O_p = torch.matmul(inverse_term, S_CL_12) * torch.sqrt(torch.tensor(z0*P_inc))
-        return V_O_p
-    
-    def calc_Pinc(self, V_O_p: torch.Tensor) -> torch.Tensor:
+        voltage_ratio = torch.matmul(inverse_term, S_CL_12)
+        return voltage_ratio
+
+    def calc_Pinc(self, voltage_ratio: torch.Tensor) -> torch.Tensor:
         """Calculate the incident power and phase for a given voltage wave.
 
         Parameters
         ----------
-        V_O_p : torch.Tensor
+        voltage_ratio : torch.Tensor
             voltage wave
             4d-tensor of shape [batch_size, nf, n0, n1]
 
@@ -251,11 +246,12 @@ class DiffCoSimulator(torch.nn.Module):
         """
 
         z0 = self.z0
+        P_inc = self.P_inc
 
-        p_inc_nominator = torch.abs(V_O_p) ** 2
+        p_inc_nominator = torch.abs(voltage_ratio * torch.sqrt(torch.tensor(z0*P_inc))) ** 2
         p_inc_denominator = z0
         p_inc = p_inc_nominator / p_inc_denominator
-        phase = torch.angle(V_O_p)
+        phase = torch.angle(voltage_ratio)
         return p_inc, phase
 
     @staticmethod

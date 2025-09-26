@@ -60,10 +60,8 @@ class CalculationPipeline(DiffCoSimulator):
         ---------
         1. Assign s-params to S_C_var `s_params` and combine with S_C_const if `indices` are provided.
         2. Build S_C.
-        3. Calculate the voltage wave.
-        4. Compute the incident power and phase.
-        5. Calculate the norm for further processing.
-        6. Calculate the electromagnetic fields.
+        3. Calculate the voltage ratio.
+        4. Combine Fields accordingly.
         """
         if indices != None:
             S_C_var = self.assign_S_C_var(s_params=s_params, 
@@ -72,8 +70,6 @@ class CalculationPipeline(DiffCoSimulator):
             S_C = self.build_S_C(S_C_var)
         else:
             S_C = self.S_C_const
-        V_O_p = self.calc_voltage_wave(S_C)
-        p_incM, phaseM = self.calc_Pinc(V_O_p)
-        norm = self.calc_norm(p_incM, phaseM)
-        b_field, e_field = self.calc_em_field(norm)
+        voltage_ratio = self.calc_voltage_ratio(S_C)
+        b_field, e_field = self.calc_em_field(voltage_ratio)
         return b_field, e_field

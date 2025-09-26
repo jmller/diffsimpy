@@ -23,11 +23,11 @@ torch.manual_seed(42)
 S_0 = torch.rand((batch_size, nf, n0, n0), dtype=torch.cdouble)
 S_C = torch.rand((batch_size, nf, n0+n1, n0+n1), dtype=torch.cdouble)
 
-def test_calc_voltage_wave():
+def test_calc_voltage_ratio():
     ds = DiffCoSimulator(S_0 = S_0, S_C_const = S_C)
-    V_O_p = ds.calc_voltage_wave(S_C)
-    assert V_O_p.shape == (batch_size, nf, n0, n1)
-    
+    voltage_ratio = ds.calc_voltage_ratio(S_C)
+    assert voltage_ratio.shape == (batch_size, nf, n0, n1)
+
 def test_calc_Pinc():
     ds = DiffCoSimulator(S_0 = S_0, S_C_const = S_C)
     V_O_p = torch.rand((batch_size, nf, n0, n1), dtype=torch.cdouble)
